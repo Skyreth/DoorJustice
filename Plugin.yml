@@ -1,0 +1,13 @@
+Name: DoorJustice
+version: 1.0
+author: SkyrethTM
+main: fr.skyreth.doorjustice.Main
+commands:
+ game:
+   description: permet de configurer une game
+   usage: /game help
+   permission: skyreth.game.config
+   permission-message: Tu n'as pas la permission de faire sa 
+permissions
+ description: permet au joueur de configurer une game
+ default: op
