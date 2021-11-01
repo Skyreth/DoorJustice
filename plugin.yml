@@ -1,0 +1,12 @@
+name: JusticeDoor
+version: 1.0.0
+author: SkyrethTM
+main: fr.skyreth.doorjustice.Main
+commands:
+ game:
+  description: permet de configurer une game
+  permission: skyreth.game.config
+permissions:
+ skyreth.game.config:
+  description: Allows foo command
+  default: op
