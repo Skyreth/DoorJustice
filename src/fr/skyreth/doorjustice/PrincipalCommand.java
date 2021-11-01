@@ -11,6 +11,8 @@ import org.bukkit.command.CommandSender;
 import org.bukkit.command.TabCompleter;
 import org.bukkit.entity.Player;
 
+import fr.skyreth.doorjustice.listeners.BreakerListener;
+
 public class PrincipalCommand implements CommandExecutor, TabCompleter
 {
 	private Main main;
@@ -75,9 +77,7 @@ public class PrincipalCommand implements CommandExecutor, TabCompleter
 							break;
 					case "join":
 						if(!hasData(args[1], "LOBBY"))
-						{
 							new LobbyRunnable(main, args[1]);
-						}
 						else
 							p.sendMessage("Le spawn a déja été définie pour cette map !");
 						break;		
@@ -113,9 +113,7 @@ public class PrincipalCommand implements CommandExecutor, TabCompleter
 						break;
 					case "setline":
 						if(!hasData(args[1], "LINE"))
-						{
 							BreakerListener.config.add(new BlockBreakedInfos(p.getUniqueId(), args[1]));
-						}
 						else
 							p.sendMessage("La ligne a déja definis pour cette map !");
 						break;

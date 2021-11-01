@@ -52,4 +52,12 @@ public class Region2D
     public boolean contains(Region2D region) {
         return region.getWorld().equals(world) && region.getMinX() >= minX && region.getMaxX() <= maxX && region.getMinZ() >= minZ && region.getMaxZ() <= maxZ;
     }
+    
+    public boolean contains(Location location) {
+        return contains(location.getBlockX(), location.getBlockZ());
+    }
+    
+    public boolean contains(int x, int z) {
+        return x >= minX && x <= maxX && z >= minZ && z <= maxZ;
+    }
 }
