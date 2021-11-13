@@ -21,6 +21,15 @@ public class Region2D
         maxZ = Math.max(z1, z2);
     }
 	
+	public Region2D(World world, int minX, int maxX, int minZ, int maxZ, boolean t)
+	{
+		this.world = world;
+		this.minX = minX;
+		this.maxX = maxX;
+		this.minZ = minZ;
+		this.maxZ = maxZ;
+	}
+	
 	public World getWorld() {
 	    return world;
 	}

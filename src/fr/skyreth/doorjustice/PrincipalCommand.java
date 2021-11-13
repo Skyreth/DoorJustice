@@ -26,6 +26,7 @@ public class PrincipalCommand implements CommandExecutor, TabCompleter
 		cmds.add("help");
 		cmds.add("create");
 		cmds.add("setspawn");
+		cmds.add("setspawncp9");
 		cmds.add("setlobby");
 		cmds.add("setbloc");
 		cmds.add("setline");
@@ -58,11 +59,7 @@ public class PrincipalCommand implements CommandExecutor, TabCompleter
 			
 			if(args.length == 0) {
 					p.sendMessage("La commande a échouer /game help pour plus d'infos !");
-					p.sendMessage("--------- §l[Voici les commandes]§r ---------");
-					for(String cm : cmds) {
-						p.sendMessage("- /game "+cm+" ");
-					}
-					p.sendMessage("--------- §l[Made by SkyrethTM]§r ---------");
+					p.performCommand("/game help t");
 					return false;
             }
 			else if(args.length > 1) 
@@ -72,59 +69,63 @@ public class PrincipalCommand implements CommandExecutor, TabCompleter
 				switch(args[0])
 				{
 					case "create":
-							con.createNewTable("`"+args[1]+"`", "`SPAWN` TEXT, `LOBBY` TEXT, `BLOCK` TEXT, `LINE` TEXT");
+							con.insert("INSERT INTO game(NAME) VALUES(?)", args[1]);
 							p.sendMessage("Vous venez de crée une nouvelle map de Justice Door nommer: "+args[1]+" !");
 							break;
 					case "join":
-						if(!hasData(args[1], "LOBBY"))
-							new LobbyRunnable(main, args[1]);
-						else
-							p.sendMessage("Le spawn a déja été définie pour cette map !");
+						Game game = main.getGameListener().getMapByName(args[1]);
+						if(game == null) {
+							Game g = new Game(main, args[1]);
+							g.addPlayer(p);
+							p.getInventory().clear();
+							main.getGameListener().addGame(g);
+							break;
+						}
+						else if(game.getState() == GameState.ATTENTE) {
+							if(!game.getPlayers().contains(p)) {
+								game.addPlayer(p);
+								p.getInventory().clear();
+							}
+							break;
+						}
+						else {
+							p.sendMessage("§4Une game est deja lancer sur cette map !");
+						}
 						break;		
 					case "setspawn":
-						if(!hasData(args[1], "LOBBY"))
-						{
-							con.insert("INSERT INTO "+args[1]+"(SPAWN) VALUES(?)", main.getRegUtil().serializeLocation(p.getLocation(), ","));
+							con.replaceDataWhere("game", "SPAWN", args[1], main.getRegUtil().serializeLocation(p.getLocation(), ","), "NAME");
 							p.sendMessage("Le spawn de la map "+args[1]+" a été set a votre position !");
-							p.sendMessage("Position[world:" + loc.getWorld().getName() +", x:"+loc.getX()+", y:"+loc.getY()+", z:" + loc.getZ() +"]");
-						}
-						else
-							p.sendMessage("Le spawn a déja été définie pour cette map !");
+							p.sendMessage("Position[world:" + loc.getWorld().getName() +", x:"+loc.getBlockX()+", y:"+loc.getBlockY()+", z:" + loc.getBlockZ() +"]");
+						break;
+					case "setspawncp9":
+							con.replaceDataWhere("game", "SPAWNCP9", args[1], main.getRegUtil().serializeLocation(p.getLocation(), ","), "NAME");
+							p.sendMessage("Le spawn de la map "+args[1]+" a été set a votre position !");
+							p.sendMessage("Position[world:" + loc.getWorld().getName() +", x:"+loc.getBlockX()+", y:"+loc.getBlockY()+", z:" + loc.getBlockZ() +"]");
 						break;
 					case "setlobby":
-						if(!hasData(args[1], "LOBBY"))
-						{
-							con.insert("INSERT INTO "+args[1]+"(LOBBY) VALUES(?)", main.getRegUtil().serializeLocation(p.getLocation(), ","));
+							con.replaceDataWhere("game", "LOBBY", args[1], main.getRegUtil().serializeLocation(p.getLocation(), ","), "NAME");
 							p.sendMessage("Le lobby de la map "+args[1]+" a été set a votre position !");
-							p.sendMessage("Position[world:" + loc.getWorld().getName() +", x:"+loc.getX()+", y:"+loc.getY()+", z:" + loc.getZ() +"]");
-						}
-						else
-							p.sendMessage("Le lobby a déja été définie pour cette map !");
+							p.sendMessage("Position[world:" + loc.getWorld().getName() +", x:"+loc.getBlockX()+", y:"+loc.getBlockY()+", z:" + loc.getBlockZ() +"]");
 						break;
 					case "setbloc":
-						if(!hasData(args[1], "BLOCK"))
-						{
-							con.insert("INSERT INTO "+args[1]+"(BLOCK) VALUES(?)", main.getRegUtil().serializeLocation(p.getLocation(), ","));
+							con.replaceDataWhere("game", "BLOCK", args[1], main.getRegUtil().serializeLocationWithoutLook(p.getLocation().getBlock().getLocation().subtract(0, 1, 0), ","), "NAME");
 							p.sendMessage("Le bloc de la map "+args[1]+" a été set a votre position !");
-							p.sendMessage("Position[world:" + loc.getWorld().getName() +", x:"+loc.getX()+", y:"+loc.getY()+", z:" + loc.getZ() +"]");
-						}
-						else
-							p.sendMessage("Le bloc a déja été définie pour cette map !");
+							p.sendMessage("Position[world:" + loc.getWorld().getName() +", x:"+loc.getBlockX()+", y:"+loc.getBlockY()+", z:" + loc.getBlockZ() +"]");
 						break;
 					case "setline":
-						if(!hasData(args[1], "LINE"))
+							p.sendMessage("Cassez un bloc pour definir la selection !");
 							BreakerListener.config.add(new BlockBreakedInfos(p.getUniqueId(), args[1]));
-						else
-							p.sendMessage("La ligne a déja definis pour cette map !");
-						break;
+							break;
 					case "deletemap":
-						if(!hasData(args[1], "LINE"))
-						{
-							this.con.deleteTable(args[1]);
+							con.delete("game", "NAME", args[1]);
 							p.sendMessage("La Map "+args[1]+" a été supprimer avec succes !");
+						break;
+					case "help":
+						p.sendMessage("--------- §l[Voici les commandes]§r ---------");
+						for(String cm : cmds) {
+							p.sendMessage("- /game "+cm+" ");
 						}
-						else
-							p.sendMessage("La map "+args[1]+" n'éxiste pas !");
+						p.sendMessage("--------- §l[Made by SkyrethTM]§r ---------");
 						break;
 				}
 			}
@@ -135,13 +136,4 @@ public class PrincipalCommand implements CommandExecutor, TabCompleter
 		}
 		return false;
 	}
-	
-	private Boolean hasData(String map, String data)
-	{
-		String result = main.getMapConnexion().select(map, data);
-		if(result != null && result != "nodata")
-			return true;
-		else
-			return false;
-	} 
 }

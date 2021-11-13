@@ -39,6 +39,7 @@ public class Main extends JavaPlugin
 		serv.getPluginManager().registerEvents(new BreakerListener(this), this);
 		serv.getPluginManager().registerEvents(gamelist, this);
 		serv.getPluginManager().registerEvents(manag, this);
+		maps.createNewTable("`game`","`NAME` TEXT, `SPAWN` TEXT, `LOBBY` TEXT, `BLOCK` TEXT, `LINE` TEXT, `SPAWNCP9` TEXT");
 		log.log(Level.INFO, "Le plugin de Justice Door a démarrer avec succes !");
 	}
 

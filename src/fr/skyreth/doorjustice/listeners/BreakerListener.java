@@ -16,8 +16,7 @@ public class BreakerListener implements org.bukkit.event.Listener
 	public static List<BlockBreakedInfos> config = new ArrayList<BlockBreakedInfos>();
 	private Main main;
 	
-	public BreakerListener(Main main)
-	{
+	public BreakerListener(Main main) {
 		this.main = main;
 	}
 
@@ -35,7 +34,9 @@ public class BreakerListener implements org.bukkit.event.Listener
 			}
 			else {
 				e.getPlayer().sendMessage("Vous venez de définir la fin de votre zone !");
-				main.getMapConnexion().insert("INSERT INTO "+p.getMap()+"(LINE) VALUES(?)", new Region2D(p.getBlock().getLocation(), e.getBlock().getLocation()).serialize(","));
+				Region2D reg = new Region2D(p.getBlock().getLocation(), e.getBlock().getLocation());
+				e.getPlayer().sendMessage(reg.toString());
+				main.getMapConnexion().replaceDataWhere("game", "LINE", p.getMap(), reg.serialize(","), "NAME");
 				config.remove(p);
 				e.setCancelled(true);
 			}

@@ -2,7 +2,9 @@ package fr.skyreth.doorjustice.utils;
 
 import java.util.ArrayList;
 import java.util.List;
+import java.util.Random;
 
+import org.bukkit.Location;
 import org.bukkit.Material;
 import org.bukkit.enchantments.Enchantment;
 import org.bukkit.entity.Player;
@@ -17,9 +19,7 @@ public class Utils
 	}
 	
 	public void BroadCastMessage(List<Player> players, String mess) {
-		for(Player p : players) {
-			p.sendMessage(mess);
-		}
+		players.forEach(p -> p.sendMessage(mess));
 	}
 	
 	public ItemStack addEnchantToItem(ItemStack stack, Enchantment[] enchant, int[] level) {    
@@ -40,6 +40,15 @@ public class Utils
 		meta.setLore(lore);
 		stack.setItemMeta(meta);
 		return stack;
+	}
+	
+	public Location randomLocationInRadius(Location center, int radius)
+	{
+		Random rand = new Random();
+		double angle = rand.nextDouble()*360; 
+		double x = center.getX() + (rand.nextDouble()*radius*Math.cos(Math.toRadians(angle))); // x
+		double z = center.getZ() + (rand.nextDouble()*radius*Math.sin(Math.toRadians(angle))); // z
+		return new Location(center.getWorld(), x, center.getY()+2, z);
 	}
 	
 	public ItemStack CreateItemCustom(String name, Material mat, int amount) {
